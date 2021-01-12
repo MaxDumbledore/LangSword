@@ -1,0 +1,5 @@
+<RCC>
+    <qresource prefix="/">
+        <file>optionFiles/languages.txt</file>
+    </qresource>
+</RCC>

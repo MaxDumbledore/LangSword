@@ -1,0 +1,200 @@
+Arabic are
+Azerbaijani aze
+Albanian alb
+Armenian arm
+Amharic amh
+Assamese asm
+Afrikaans afr
+Achinese ach
+Akan aka
+Algerian Arabic arq
+Ancient Greek gra
+Aragonese arg
+Asturian ast
+Aymara aym
+Bulgarian bul
+Burmese bur
+Bengali ben
+Belarusian bel
+Bosnian bos
+Basque baq
+Bislama bis
+Baluchi bal
+Bashkir bak
+Bemba bem
+Berber languages ber
+Bhojpuri bho
+BlinBokmål bli
+Breton bre
+BasaSunda sun
+Brazilian Portuguese pot
+Chinese zh
+Cantonese yue
+Classical Chinese cht
+Czech cs
+Catalan cat
+Croatian hrv
+Cebuano ceb
+Corsican cos
+Chichewa nya
+Canadian French frn
+Cherokee chr
+Chuvash chv
+Cornish cor
+Creek cre
+Crimean Tatar cri
+Dutch nl
+Danish dan
+Divehi div
+English en
+Estonian est
+Esperanto epo
+French fra
+Finnish fin
+Filipino fil
+Fulani ful
+Faroese fao
+Friulian fri
+German de
+Greek el
+Georgian geo
+Galician glg
+Gujarati guj
+Guarani grn
+Gaelic gla
+Hungarian hu
+Hebrew heb
+Hindi hi
+Hawaiian haw
+Hausa hau
+Haitian Creole ht
+Hakha Chin hak
+Hiligaynon hil
+Hupa hup
+Hmong hmn
+Italian it
+Indonesian id
+Igbo ibo
+Icelandic ice
+Irish gle
+Ido ido
+Ingush ing
+Interlingua ina
+Inuktitut iu
+Japanese jp
+Javanese jav
+Korean kor
+Kazakh kaz
+Khmer hkm
+Kannada kan
+Kurdish kur
+Konkani kok
+Kashmiri kas
+Kongo kon
+Kalaallisut kal
+KyrgyzKabyle kir 
+Kanuri kau
+Kashubian kah
+Kinyarwanda kin
+Klingon kli
+Lao lao
+Latin lat
+Lithuanian lit
+Latvian lav
+Luxembourgish ltz
+Lingala lin
+Latgalian lat
+Limburgish lim
+LojbanLow German loj
+Lower Sorbian los
+Luganda lug
+Malay may
+Macedonian mac
+Montenegrin mot
+Marathi mar
+Malayalam mal
+Maltese mlt
+Maori mao
+Malagasy mg
+Maithili mai
+Marshallese mah
+Manx glv
+Mauritian Creole
+Middle French
+Norwegian
+Nepali
+Northern Sotho
+Neapolitan
+N'Ko
+Northern Sami
+Nynorsk
+Oriya
+Occitan
+Ojibwa
+Old English
+Oromo
+Ossetian
+Polish
+Portuguese
+Persian
+Pashto
+Punjabi
+Papiamento
+Pampanga
+Quechua
+Russian
+Romanian
+Romansh
+Romany
+Rusyn
+Spanish
+Swedish
+Slovenian
+Slovak
+Sinhala
+Serbian
+Serb(Cyrillic)
+Sindhi
+Swahili
+Somali
+Shona
+Samoan
+Southern Sotho
+Southern Ndebele
+Sanskrit
+Scots
+Syriac
+Sardinian
+Serbo-Croatian
+Shan
+Silesian
+Songhai languages
+Traditional Chinese
+Thai
+Turkish
+Tamil
+Tajik
+Turkmen
+Tetum
+Telugu
+Tsonga
+Tagalog
+Tatar
+Tigrinya
+Tunisian Arabic
+Twi
+Ukrainian
+Urdu
+Uzbek
+Upper Sorbian
+Vietnamese
+Venda
+Welsh
+Wolof
+Walloon
+Western Frisian
+Xhosa
+Yoruba
+Yiddish
+Zulu
+Zaza

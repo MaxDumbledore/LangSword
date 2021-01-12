@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/">
+        <file>icons/langSword.svg</file>
+        <file>icons/reverseLanguage.svg</file>
+    </qresource>
+</RCC>
