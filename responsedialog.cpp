@@ -43,7 +43,6 @@ void ResponseDialog::changeEvent(QEvent *event)
         else
         {
             //qDebug()<<"out"<<endl;
-            //
             fadeAnimation->start();
         }
     }
