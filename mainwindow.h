@@ -5,6 +5,7 @@
 
 #include <QSystemTrayIcon>
 #include <QHotkey>
+#include <QLabel>
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
@@ -29,15 +30,23 @@ private slots:
     void setIcon();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void translateContentInClipboard();
+    void updateStatusByteCountLabel();
+
+    void on_translateButton_clicked();
+
+    void on_swapLangButton_clicked();
+
+    void on_clearButton_clicked();
 
 private:
     Ui::MainWindow *ui;
+    QLabel *statusByteCountLabel;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
     QAction *restoreAction, *selectionTranslateAction, *quitAction;
     QHotkey *translateHotkey;
 
-    TranslateCore *translateCore;
+    TranslateCore *translateCore,*mainTranslateCore;
 
     bool notInformAnymore,minimizeAfterClose;
 

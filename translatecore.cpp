@@ -12,8 +12,8 @@ const char TranslateCore::prefixURL[]="http://api.fanyi.baidu.com/api/trans/vip/
 const char TranslateCore::appId[]="20210105000663879";
 const char TranslateCore::secretKey[]="N1gS5hAyCBukHXTeeVHP";
 
-TranslateCore::TranslateCore():
-    from("en"),to("zh"),
+TranslateCore::TranslateCore(QString _from, QString _to):
+    from(_from),to(_to),
     rd(),rng(rd())
 {
 }

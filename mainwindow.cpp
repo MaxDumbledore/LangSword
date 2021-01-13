@@ -3,8 +3,6 @@
 #include "responsedialog.h"
 #include "ui_mainwindow.h"
 
-#ifndef QT_NO_SYSTEMTRAYICON
-
 #include <QCheckBox>
 #include <QCloseEvent>
 #include <QDebug>
@@ -24,9 +22,16 @@ MainWindow::MainWindow(QWidget *parent)
     createTranslateHotkey();
     createLanguageOptions();
 
-    readSettings();
-
     translateCore=new TranslateCore();
+    mainTranslateCore=new TranslateCore(ui->sourceComboBox->currentData().toString(),
+                                        ui->targetComboBox->currentData().toString());
+    statusByteCountLabel=new QLabel("0",this);
+    statusByteCountLabel->setAlignment(Qt::AlignRight);
+    ui->statusbar->addWidget(statusByteCountLabel,1);
+
+    connect(ui->sourceEdit,&QTextEdit::textChanged,this,&MainWindow::updateStatusByteCountLabel);
+
+    readSettings();
 
     trayIcon->setIcon(QIcon(":/icons/langSword.svg"));
     trayIcon->show();
@@ -42,7 +47,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
     if(!trayIcon->isVisible())
     {
         writeSettings();
-        return ;
+        //return ;
+        qApp->exit();
     }
     if(!notInformAnymore)
     {
@@ -62,6 +68,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         event->ignore();
         return ;
     }
+    qApp->exit();
 }
 
 void MainWindow::setIcon()
@@ -99,7 +106,7 @@ void MainWindow::createTrayIcon()
 void MainWindow::createTranslateHotkey()
 {
     translateHotkey=new QHotkey(QKeySequence("Ctrl+G"),true,qApp);
-    QObject::connect(translateHotkey,&QHotkey::activated,this,&MainWindow::translateContentInClipboard);
+    connect(translateHotkey,&QHotkey::activated,this,&MainWindow::translateContentInClipboard);
 }
 
 void MainWindow::createLanguageOptions()
@@ -132,11 +139,19 @@ void MainWindow::createLanguageOptions()
     languageToCode[tr("Hungarian")]="hu";
     languageToCode[tr("Traditional Chinese")]="cht";
     languageToCode[tr("Vietnamese")]="vie";
+
+    ui->sourceComboBox->addItem(tr("Auto-detection"),"auto");
     for(auto &i:languageToCode.keys())
     {
         ui->sourceComboBox->addItem(i,languageToCode.value(i));
         ui->targetComboBox->addItem(i,languageToCode.value(i));
     }
+    connect(ui->sourceComboBox,&QComboBox::currentTextChanged,[&](const QString &currentText){
+        mainTranslateCore->from=ui->sourceComboBox->currentData().toString();
+    });
+    connect(ui->targetComboBox,&QComboBox::currentTextChanged,[&](const QString &currentText){
+        mainTranslateCore->to=ui->targetComboBox->currentData().toString();
+    });
 }
 
 void MainWindow::readSettings()
@@ -144,6 +159,8 @@ void MainWindow::readSettings()
     QSettings settings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
     notInformAnymore=settings.value("notInformAnymore",false).toBool();
     minimizeAfterClose=settings.value("minimizeAfterClose",true).toBool();
+    ui->sourceComboBox->setCurrentText(settings.value("defaultSourceLanguage",tr("English")).toString());
+    ui->targetComboBox->setCurrentText(settings.value("defaultTargetLanguage",tr("Chinese")).toString());
 }
 
 void MainWindow::writeSettings()
@@ -151,16 +168,38 @@ void MainWindow::writeSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("notInformAnymore",notInformAnymore);
     settings.setValue("minimizeAfterClose",minimizeAfterClose);
-    //settings.setValue("defaultSourceLanguage",ui->sourceComboBox->currentText());
-    //settings
-
+    settings.setValue("defaultSourceLanguage",ui->sourceComboBox->currentText());
+    settings.setValue("defaultTargetLanguage",ui->targetComboBox->currentText());
 }
 
 void MainWindow::translateContentInClipboard()
 {
-    ResponseDialog *responseDialog=new ResponseDialog(translateCore->translate(qApp->clipboard()->text()),this);
+    ResponseDialog *responseDialog=new ResponseDialog(translateCore->translate(qApp->clipboard()->text()));
     responseDialog->show();
     responseDialog->activateWindow();
 }
 
-#endif
+void MainWindow::updateStatusByteCountLabel()
+{
+    statusByteCountLabel->setText(QString::number(ui->sourceEdit->toPlainText().toUtf8().length()));
+}
+
+void MainWindow::on_translateButton_clicked()
+{
+    ui->targetEdit->setText(mainTranslateCore->translate(ui->sourceEdit->toPlainText()));
+}
+
+void MainWindow::on_swapLangButton_clicked()
+{
+    auto p=ui->sourceComboBox->currentText();
+    if(p==tr("Auto-detection"))
+        return ;
+    ui->sourceComboBox->setCurrentText(ui->targetComboBox->currentText());
+    ui->targetComboBox->setCurrentText(p);
+}
+
+void MainWindow::on_clearButton_clicked()
+{
+    ui->sourceEdit->clear();
+    ui->targetEdit->clear();
+}

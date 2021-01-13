@@ -1,6 +1,7 @@
 #ifndef TRANSLATECORE_H
 #define TRANSLATECORE_H
 
+//#include <QObject>
 #include <QString>
 #include <random>
 
@@ -13,13 +14,14 @@ struct CurlMem
 class TranslateCore
 {
 public:
-    TranslateCore();
+    QString from,to;
+
+    TranslateCore(QString _from="en", QString _to="zh");
     QString translate(QString content);
 
 private:
     const static char prefixURL[],appId[],secretKey[];
 
-    QString from,to;
     std::random_device rd;
     std::default_random_engine rng;
     std::uniform_int_distribution<int> myRand;
