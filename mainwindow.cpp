@@ -1,6 +1,7 @@
 #include "closeinformdialog.h"
 #include "mainwindow.h"
 #include "responsedialog.h"
+#include "settingsdialog.h"
 #include "ui_mainwindow.h"
 
 #include <QCheckBox>
@@ -17,6 +18,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    createMenuActions();
     createTrayActions();
     createTrayIcon();
     createTranslateHotkey();
@@ -31,7 +33,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->sourceEdit,&QTextEdit::textChanged,this,&MainWindow::updateStatusByteCountLabel);
 
-    readSettings();
+    readOutDialogSettings();
+    readInDialogSettings();
 
     trayIcon->setIcon(QIcon(":/icons/langSword.svg"));
     trayIcon->show();
@@ -46,7 +49,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
 {
     if(!trayIcon->isVisible())
     {
-        writeSettings();
+        writeOutDialogSettings();
         //return ;
         qApp->exit();
     }
@@ -61,7 +64,7 @@ void MainWindow::closeEvent(QCloseEvent *event)
         notInformAnymore=closeInformDialog.getWhetherNotInformAnymore();
         minimizeAfterClose=closeInformDialog.getClosePurpose();
     }
-    writeSettings();
+    writeOutDialogSettings();
     if(minimizeAfterClose)
     {
         hide();
@@ -154,7 +157,12 @@ void MainWindow::createLanguageOptions()
     });
 }
 
-void MainWindow::readSettings()
+void MainWindow::createMenuActions()
+{
+    connect(ui->actionSettings,&QAction::triggered,this,&MainWindow::showSettingsDialog);
+}
+
+void MainWindow::readOutDialogSettings()
 {
     QSettings settings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
     notInformAnymore=settings.value("notInformAnymore",false).toBool();
@@ -163,7 +171,7 @@ void MainWindow::readSettings()
     ui->targetComboBox->setCurrentText(settings.value("defaultTargetLanguage",tr("Chinese")).toString());
 }
 
-void MainWindow::writeSettings()
+void MainWindow::writeOutDialogSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("notInformAnymore",notInformAnymore);
@@ -171,6 +179,46 @@ void MainWindow::writeSettings()
     settings.setValue("defaultSourceLanguage",ui->sourceComboBox->currentText());
     settings.setValue("defaultTargetLanguage",ui->targetComboBox->currentText());
 }
+
+void MainWindow::readInDialogSettings()
+{
+    syncTimer=new QTimer(this);
+    syncTimer->setSingleShot(true);
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    syncMode=false;
+    if(settings.value("syncMode",false).toBool())
+        changeSyncMode();
+}
+
+void MainWindow::writeInDialogSettings()
+{
+    QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
+    settings.setValue("syncMode",syncMode);
+}
+
+void MainWindow::retime(){
+    syncTimer->start(500);
+}
+
+bool MainWindow::getSyncMode() const
+{
+    return syncMode;
+}
+
+void MainWindow::changeSyncMode()
+{
+    syncMode=!syncMode;
+    if(syncMode){
+        retime();
+        connect(syncTimer,&QTimer::timeout,this,&MainWindow::on_translateButton_clicked);
+        connect(ui->sourceEdit,&QTextEdit::textChanged,this,&MainWindow::retime);
+    }else{
+        disconnect(ui->sourceEdit,&QTextEdit::textChanged ,this, &MainWindow::retime);
+        syncTimer->stop();
+    }
+}
+
+//read
 
 void MainWindow::translateContentInClipboard()
 {
@@ -182,6 +230,16 @@ void MainWindow::translateContentInClipboard()
 void MainWindow::updateStatusByteCountLabel()
 {
     statusByteCountLabel->setText(QString::number(ui->sourceEdit->toPlainText().toUtf8().length()));
+}
+
+void MainWindow::showSettingsDialog()
+{
+    SettingsDialog settingsDialog(this);
+    if(settingsDialog.exec()==QDialog::Accepted)
+    {
+        settingsDialog.updateSettings();
+        writeInDialogSettings();
+    }
 }
 
 void MainWindow::on_translateButton_clicked()
@@ -196,6 +254,9 @@ void MainWindow::on_swapLangButton_clicked()
         return ;
     ui->sourceComboBox->setCurrentText(ui->targetComboBox->currentText());
     ui->targetComboBox->setCurrentText(p);
+    p=ui->sourceEdit->toPlainText();
+    ui->sourceEdit->setText(ui->targetEdit->toPlainText());
+    ui->targetEdit->setText(p);
 }
 
 void MainWindow::on_clearButton_clicked()

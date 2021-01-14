@@ -17,21 +17,26 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     closeinformdialog.cpp \
+    customtabstyle.cpp \
     main.cpp \
     mainwindow.cpp \
     responsedialog.cpp \
+    settingsdialog.cpp \
     translatecore.cpp
 
 HEADERS += \
     closeinformdialog.h \
+    customtabstyle.h \
     mainwindow.h \
     responsedialog.h \
+    settingsdialog.h \
     translatecore.h
 
 FORMS += \
     closeinformdialog.ui \
     mainwindow.ui \
-    responsedialog.ui
+    responsedialog.ui \
+    settingsdialog.ui
 
 LIBS += \
     -lcurl \
