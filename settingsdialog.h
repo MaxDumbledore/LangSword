@@ -2,6 +2,7 @@
 #define SETTINGSDIALOG_H
 
 #include <QDialog>
+#include <QStandardItemModel>
 
 namespace Ui {
 class SettingsDialog;
@@ -15,10 +16,13 @@ public:
     explicit SettingsDialog(QWidget *parent = nullptr);
     ~SettingsDialog();
 
-    void updateSettings();
-
 private:
     Ui::SettingsDialog *ui;
+    QStandardItemModel *pModel;
+    void readInDialogSettings();
+
+private slots:
+    void updateSettings();
 };
 
 #endif // SETTINGSDIALOG_H

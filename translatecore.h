@@ -14,13 +14,20 @@ struct CurlMem
 class TranslateCore
 {
 public:
-    QString from,to;
 
     TranslateCore(QString _from="en", QString _to="zh");
     QString translate(QString content);
 
+    QString getFrom() const;
+    void setFrom(const QString &value);
+
+    QString getTo() const;
+    void setTo(const QString &value);
+
 private:
     const static char prefixURL[],appId[],secretKey[];
+
+    QString from,to;
 
     std::random_device rd;
     std::default_random_engine rng;

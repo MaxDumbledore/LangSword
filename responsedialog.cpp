@@ -18,8 +18,9 @@ ResponseDialog::ResponseDialog(QString content, QWidget *parent) :
     setWindowOpacity(initialOpacity);
     auto font=ui->textEdit->document()->defaultFont();
     auto fontMetrics=new QFontMetrics(font);
-    auto textSize=fontMetrics->size(0,content);
-    resize(width(), textSize.width()*textSize.height()/ui->textEdit->width());
+    auto temp=width()-layout()->margin()*2;
+    //qDebug()<<temp<<fontMetrics->boundingRect(QRect(0,0,temp,0),Qt::TextWordWrap,content);
+    resize(width(), layout()->margin()*2+fontMetrics->lineSpacing()*2+fontMetrics->boundingRect(QRect(0,0,temp,0),Qt::TextWordWrap,content).height());
     ui->textEdit->moveCursor(QTextCursor::End);
     createFadeAnimation();
 }
@@ -28,6 +29,7 @@ ResponseDialog::~ResponseDialog()
 {
     delete ui;
 }
+
 
 void ResponseDialog::changeEvent(QEvent *event)
 {
@@ -62,3 +64,4 @@ void ResponseDialog::createFadeAnimation()
     fadeAnimation->setEasingCurve(QEasingCurve::OutBack);
     connect(fadeAnimation,&QPropertyAnimation::finished,this,&QDialog::close);
 }
+

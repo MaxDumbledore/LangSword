@@ -78,6 +78,26 @@ QString TranslateCore::translate(QString content)
     return getResultFromJson(s);
 }
 
+QString TranslateCore::getFrom() const
+{
+    return from;
+}
+
+void TranslateCore::setFrom(const QString &value)
+{
+    from = value;
+}
+
+QString TranslateCore::getTo() const
+{
+    return to;
+}
+
+void TranslateCore::setTo(const QString &value)
+{
+    to = value;
+}
+
 size_t TranslateCore::cb(void *data, size_t size, size_t nmemb, void *userp)
 {
     auto realsize=size*nmemb;

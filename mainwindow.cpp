@@ -11,6 +11,7 @@
 #include <QRadioButton>
 #include <QSettings>
 #include <QClipboard>
+#include "languageconstants.h"
 #include "translatecore.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -18,6 +19,10 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+
+    syncTimer=new QTimer(this);
+    syncTimer->setSingleShot(true);
+
     createMenuActions();
     createTrayActions();
     createTrayIcon();
@@ -32,6 +37,13 @@ MainWindow::MainWindow(QWidget *parent)
     ui->statusbar->addWidget(statusByteCountLabel,1);
 
     connect(ui->sourceEdit,&QTextEdit::textChanged,this,&MainWindow::updateStatusByteCountLabel);
+
+    commonUsedPairGroup=new QActionGroup(this);
+    connect(commonUsedPairGroup,&QActionGroup::triggered,[&](){
+        auto t=commonUsedPairGroup->checkedAction()->text().split(" -> ");
+        translateCore->setFrom(LanguageConstants::getLanguageMap()[t[0]]);
+        translateCore->setTo(LanguageConstants::getLanguageMap()[t[1]]);
+    });
 
     readOutDialogSettings();
     readInDialogSettings();
@@ -87,9 +99,16 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::createTrayActions()
 {
     restoreAction=new QAction(tr("Show Main Interface(&S)"),this);
-    connect(restoreAction,&QAction::triggered,this,&QWidget::showNormal);
+    connect(restoreAction,&QAction::triggered,[&](){
+        showNormal();
+        activateWindow();
+    });
     selectionTranslateAction=new QAction(tr("Autotranslate The Selection(&A)"),this);
     selectionTranslateAction->setCheckable(true);
+    commonUsedPairsStartSep=new QAction(this);
+    commonUsedPairsStartSep->setSeparator(true);
+    commonUsedPairsEndSep=new QAction(this);
+    commonUsedPairsEndSep->setSeparator(true);
     quitAction=new QAction(tr("Quit(&Q)"),this);
     connect(quitAction,&QAction::triggered,qApp,&QCoreApplication::quit);
 }
@@ -99,7 +118,8 @@ void MainWindow::createTrayIcon()
     trayIconMenu=new QMenu(this);
     trayIconMenu->addAction(restoreAction);
     trayIconMenu->addAction(selectionTranslateAction);
-    trayIconMenu->addSeparator();
+    trayIconMenu->addAction(commonUsedPairsStartSep);
+    trayIconMenu->addAction(commonUsedPairsEndSep);
     trayIconMenu->addAction(quitAction);
 
     trayIcon=new QSystemTrayIcon(this);
@@ -114,46 +134,19 @@ void MainWindow::createTranslateHotkey()
 
 void MainWindow::createLanguageOptions()
 {
-    languageToCode[tr("Chinese")]="zh";
-    languageToCode[tr("English")]="en";
-    languageToCode[tr("Cantonese")]="yue";
-    languageToCode[tr("Classical Chinese")]="wyw";
-    languageToCode[tr("Japanese")]="jp";
-    languageToCode[tr("Korean")]="kor";
-    languageToCode[tr("French")]="fra";
-    languageToCode[tr("Spanish")]="spa";
-    languageToCode[tr("Thai")]="th";
-    languageToCode[tr("Arabic")]="ara";
-    languageToCode[tr("Russian")]="ru";
-    languageToCode[tr("Portuguese")]="pt";
-    languageToCode[tr("German")]="de";
-    languageToCode[tr("Italian")]="it";
-    languageToCode[tr("Greek")]="el";
-    languageToCode[tr("Dutch")]="nl";
-    languageToCode[tr("Polish")]="pl";
-    languageToCode[tr("Bulgarian")]="bul";
-    languageToCode[tr("Estonian")]="est";
-    languageToCode[tr("Danish")]="dan";
-    languageToCode[tr("Finland")]="fin";
-    languageToCode[tr("Czech")]="cs";
-    languageToCode[tr("Romanian")]="rom";
-    languageToCode[tr("Slovenian")]="slo";
-    languageToCode[tr("Swedish")]="swe";
-    languageToCode[tr("Hungarian")]="hu";
-    languageToCode[tr("Traditional Chinese")]="cht";
-    languageToCode[tr("Vietnamese")]="vie";
-
-    ui->sourceComboBox->addItem(tr("Auto-detection"),"auto");
-    for(auto &i:languageToCode.keys())
-    {
-        ui->sourceComboBox->addItem(i,languageToCode.value(i));
-        ui->targetComboBox->addItem(i,languageToCode.value(i));
-    }
+    for(auto &i:LanguageConstants::getSourceLanguages())
+        ui->sourceComboBox->addItem(i,LanguageConstants::getLanguageMap().value(i));
+    for(auto &i:LanguageConstants::getTargetLanguages())
+        ui->targetComboBox->addItem(i,LanguageConstants::getLanguageMap().value(i));
     connect(ui->sourceComboBox,&QComboBox::currentTextChanged,[&](const QString &currentText){
-        mainTranslateCore->from=ui->sourceComboBox->currentData().toString();
+        mainTranslateCore->setFrom(ui->sourceComboBox->currentData().toString());
+        if(getSyncMode()&&!syncTimer->isActive())
+            on_translateButton_clicked();
     });
     connect(ui->targetComboBox,&QComboBox::currentTextChanged,[&](const QString &currentText){
-        mainTranslateCore->to=ui->targetComboBox->currentData().toString();
+        mainTranslateCore->setTo(ui->targetComboBox->currentData().toString());
+        if(getSyncMode()&&!syncTimer->isActive())
+            on_translateButton_clicked();
     });
 }
 
@@ -167,8 +160,8 @@ void MainWindow::readOutDialogSettings()
     QSettings settings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
     notInformAnymore=settings.value("notInformAnymore",false).toBool();
     minimizeAfterClose=settings.value("minimizeAfterClose",true).toBool();
-    ui->sourceComboBox->setCurrentText(settings.value("defaultSourceLanguage",tr("English")).toString());
-    ui->targetComboBox->setCurrentText(settings.value("defaultTargetLanguage",tr("Chinese")).toString());
+    ui->sourceComboBox->setCurrentText(settings.value("mainSourceLanguage",LanguageConstants::defaultSourceLanguage).toString());
+    ui->targetComboBox->setCurrentText(settings.value("mainTargetLanguage",LanguageConstants::defaultTargetLanguage).toString());
 }
 
 void MainWindow::writeOutDialogSettings()
@@ -176,24 +169,37 @@ void MainWindow::writeOutDialogSettings()
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("notInformAnymore",notInformAnymore);
     settings.setValue("minimizeAfterClose",minimizeAfterClose);
-    settings.setValue("defaultSourceLanguage",ui->sourceComboBox->currentText());
-    settings.setValue("defaultTargetLanguage",ui->targetComboBox->currentText());
+    settings.setValue("mainSourceLanguage",ui->sourceComboBox->currentText());
+    settings.setValue("mainTargetLanguage",ui->targetComboBox->currentText());
 }
 
 void MainWindow::readInDialogSettings()
 {
-    syncTimer=new QTimer(this);
-    syncTimer->setSingleShot(true);
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     syncMode=false;
     if(settings.value("syncMode",false).toBool())
         changeSyncMode();
+
+    auto commonUsedPairs=settings.value("commonUsedPairs",
+                                        QStringList(LanguageConstants::defaultSourceLanguage+" -> "+LanguageConstants::defaultTargetLanguage)).toStringList();
+    for(auto &i:qAsConst(commonUsedPairs))
+    {
+        auto action=new QAction(i,commonUsedPairGroup);
+        action->setCheckable(true);
+    }
+    commonUsedPairGroup->actions()[0]->setChecked(true);
+    trayIconMenu->insertActions(commonUsedPairsEndSep,commonUsedPairGroup->actions());
 }
 
 void MainWindow::writeInDialogSettings()
 {
     QSettings settings(QCoreApplication::organizationName(), QCoreApplication::applicationName());
     settings.setValue("syncMode",syncMode);
+
+    QStringList commonUsedPairs;
+    for(auto &i:commonUsedPairGroup->actions())
+        commonUsedPairs.append(i->text());
+    settings.setValue("commonUsedPairs",commonUsedPairs);
 }
 
 void MainWindow::retime(){
@@ -203,6 +209,22 @@ void MainWindow::retime(){
 bool MainWindow::getSyncMode() const
 {
     return syncMode;
+}
+
+void MainWindow::replaceCommonUsedPairs(QStringList newCommonUsedPairs)
+{
+    for(auto &i:commonUsedPairGroup->actions())
+    {
+        trayIconMenu->removeAction(i);
+        delete i;
+    }
+    for(auto &i:qAsConst(newCommonUsedPairs))
+    {
+        auto action=new QAction(i,commonUsedPairGroup);
+        action->setCheckable(true);
+    }
+    commonUsedPairGroup->actions()[0]->setChecked(true);
+    trayIconMenu->insertActions(commonUsedPairsEndSep,commonUsedPairGroup->actions());
 }
 
 void MainWindow::changeSyncMode()
@@ -217,8 +239,6 @@ void MainWindow::changeSyncMode()
         syncTimer->stop();
     }
 }
-
-//read
 
 void MainWindow::translateContentInClipboard()
 {
@@ -236,10 +256,7 @@ void MainWindow::showSettingsDialog()
 {
     SettingsDialog settingsDialog(this);
     if(settingsDialog.exec()==QDialog::Accepted)
-    {
-        settingsDialog.updateSettings();
         writeInDialogSettings();
-    }
 }
 
 void MainWindow::on_translateButton_clicked()
@@ -250,13 +267,13 @@ void MainWindow::on_translateButton_clicked()
 void MainWindow::on_swapLangButton_clicked()
 {
     auto p=ui->sourceComboBox->currentText();
-    if(p==tr("Auto-detection"))
+    if(p==LanguageConstants::langAuto)
         return ;
+    auto tmp=ui->sourceEdit->toPlainText();
+    ui->sourceEdit->setText(ui->targetEdit->toPlainText());
+    ui->targetEdit->setText(tmp);
     ui->sourceComboBox->setCurrentText(ui->targetComboBox->currentText());
     ui->targetComboBox->setCurrentText(p);
-    p=ui->sourceEdit->toPlainText();
-    ui->sourceEdit->setText(ui->targetEdit->toPlainText());
-    ui->targetEdit->setText(p);
 }
 
 void MainWindow::on_clearButton_clicked()

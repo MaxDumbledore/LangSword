@@ -26,11 +26,7 @@
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout">
         <item>
-         <widget class="QComboBox" name="sourceComboBox">
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="sourceComboBox"/>
         </item>
         <item>
          <widget class="QPushButton" name="swapLangButton">
@@ -48,11 +44,7 @@
          </widget>
         </item>
         <item>
-         <widget class="QComboBox" name="targetComboBox">
-          <property name="editable">
-           <bool>false</bool>
-          </property>
-         </widget>
+         <widget class="QComboBox" name="targetComboBox"/>
         </item>
        </layout>
       </item>

@@ -8,6 +8,7 @@
 #include <QHotkey>
 #include <QLabel>
 #include <QTimer>
+#include <QActionGroup>
 
 #ifndef QT_NO_SYSTEMTRAYICON
 
@@ -25,8 +26,8 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
     void changeSyncMode();
-
     bool getSyncMode() const;
+    void replaceCommonUsedPairs(QStringList newCommonUsedPairs);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -49,15 +50,14 @@ private:
     QLabel *statusByteCountLabel;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
-    QAction *restoreAction, *selectionTranslateAction, *quitAction;
+    QAction *restoreAction, *selectionTranslateAction,*commonUsedPairsStartSep,*commonUsedPairsEndSep, *quitAction;
+    QActionGroup *commonUsedPairGroup;
     QHotkey *translateHotkey;
 
     TranslateCore *translateCore,*mainTranslateCore;
 
     bool notInformAnymore,minimizeAfterClose;
     bool syncMode;
-
-    QMap<QString,QString> languageToCode;
 
     QTimer *syncTimer;
 
