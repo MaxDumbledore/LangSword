@@ -1,7 +1,9 @@
 #include "languageconstants.h"
 
 const QString LanguageConstants::defaultSourceLanguage=QObject::tr("English");
+const QString LanguageConstants::defaultSourceCode="en";
 const QString LanguageConstants::defaultTargetLanguage=QObject::tr("Chinese");
+const QString LanguageConstants::defaultTargetCode="zh";
 const QString LanguageConstants::langAuto=tr("Auto-detection");
 
 QMap<QString,QString> LanguageConstants::languageToCode;

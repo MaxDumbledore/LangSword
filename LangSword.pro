@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -18,7 +18,9 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     closeinformdialog.cpp \
     combodelegate.cpp \
+    commontranslatecore.cpp \
     customtabstyle.cpp \
+    documenttranslatecore.cpp \
     languageconstants.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -29,7 +31,9 @@ SOURCES += \
 HEADERS += \
     closeinformdialog.h \
     combodelegate.h \
+    commontranslatecore.h \
     customtabstyle.h \
+    documenttranslatecore.h \
     languageconstants.h \
     mainwindow.h \
     responsedialog.h \
@@ -42,9 +46,9 @@ FORMS += \
     responsedialog.ui \
     settingsdialog.ui
 
-LIBS += \
-    -lcurl \
-    -lcrypto
+#LIBS += \
+#    -lcurl \
+#    -lcrypto
 
 
 # Default rules for deployment.

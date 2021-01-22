@@ -2,7 +2,7 @@
 #define MAINWINDOW_H
 
 #include "settingsdialog.h"
-#include "translatecore.h"
+#include "commontranslatecore.h"
 
 #include <QSystemTrayIcon>
 #include <QHotkey>
@@ -35,11 +35,9 @@ protected:
 private slots:
     void setIcon();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
-    void translateContentInClipboard();
     void updateStatusByteCountLabel();
     void showSettingsDialog();
 
-    void on_translateButton_clicked();
     void on_swapLangButton_clicked();
     void on_clearButton_clicked();
 
@@ -54,7 +52,7 @@ private:
     QActionGroup *commonUsedPairGroup;
     QHotkey *translateHotkey;
 
-    TranslateCore *translateCore,*mainTranslateCore;
+    CommonTranslateCore *dialogCommonTranslateCore,*mainCommonTranslateCore;
 
     bool notInformAnymore,minimizeAfterClose;
     bool syncMode;

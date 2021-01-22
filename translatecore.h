@@ -1,22 +1,19 @@
 #ifndef TRANSLATECORE_H
 #define TRANSLATECORE_H
 
-//#include <QObject>
-#include <QString>
+#include <QNetworkReply>
+#include <QObject>
 #include <random>
+#include <languageconstants.h>
 
-struct CurlMem
+class TranslateCore : public QObject
 {
-    char *response;
-    size_t size;
-};
-
-class TranslateCore
-{
+    Q_OBJECT
 public:
+    TranslateCore(QString _from=LanguageConstants::defaultSourceCode, QString _to=LanguageConstants::defaultTargetCode);
 
-    TranslateCore(QString _from="en", QString _to="zh");
-    QString translate(QString content);
+    const static QString appId;
+    const static QString secretKey;
 
     QString getFrom() const;
     void setFrom(const QString &value);
@@ -24,17 +21,17 @@ public:
     QString getTo() const;
     void setTo(const QString &value);
 
-private:
-    const static char prefixURL[],appId[],secretKey[];
+    virtual void translate(QString)=0;
+
+protected:
+    static std::random_device rd;
+    static std::default_random_engine rng;
+    static std::uniform_int_distribution<int> myRand;
+    QNetworkAccessManager *naManager;
 
     QString from,to;
-
-    std::random_device rd;
-    std::default_random_engine rng;
-    std::uniform_int_distribution<int> myRand;
-
-    static size_t cb(void *data, size_t size, size_t nmemb, void *userp);
-    QString getResultFromJson(QByteArray s);
+protected slots:
+    virtual void callback(QNetworkReply *reply);
 };
 
 #endif // TRANSLATECORE_H

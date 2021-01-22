@@ -8,7 +8,7 @@ class LanguageConstants: public QObject
 {
     //Q_OBJECT
 public:
-    static const QString defaultSourceLanguage,defaultTargetLanguage,langAuto;
+    static const QString defaultSourceLanguage,defaultTargetLanguage,langAuto,defaultSourceCode,defaultTargetCode;
     static const QMap<QString,QString> & getLanguageMap();
     static const QList<QString> & getSourceLanguages();
     static const QList<QString> & getTargetLanguages();
