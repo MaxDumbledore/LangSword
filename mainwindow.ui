@@ -49,10 +49,10 @@
        </layout>
       </item>
       <item>
-       <widget class="QTextEdit" name="sourceEdit"/>
+       <widget class="EnhancedTextEdit" name="sourceEdit"/>
       </item>
       <item>
-       <widget class="QTextEdit" name="targetEdit"/>
+       <widget class="EnhancedTextEdit" name="targetEdit"/>
       </item>
       <item>
        <layout class="QHBoxLayout" name="horizontalLayout_2" stretch="3,5">
@@ -118,6 +118,13 @@
    </property>
   </action>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>EnhancedTextEdit</class>
+   <extends>QTextEdit</extends>
+   <header>enhancedtextedit.h</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -9,8 +9,7 @@
 #include <QLabel>
 #include <QTimer>
 #include <QActionGroup>
-
-#ifndef QT_NO_SYSTEMTRAYICON
+#include <QCheckBox>
 
 #include <QMainWindow>
 
@@ -28,6 +27,10 @@ public:
     void changeSyncMode();
     bool getSyncMode() const;
     void replaceCommonUsedPairs(QStringList newCommonUsedPairs);
+    QStringList getCommonUsedPairs();
+
+    bool getNotInformAnymore() const;
+    void setNotInformAnymore(bool value);
 
 protected:
     void closeEvent(QCloseEvent *event) override;
@@ -36,16 +39,16 @@ private slots:
     void setIcon();
     void iconActivated(QSystemTrayIcon::ActivationReason reason);
     void updateStatusByteCountLabel();
-    void showSettingsDialog();
 
     void on_swapLangButton_clicked();
     void on_clearButton_clicked();
 
-    void retime();
+    void resetSyncTimer();
 
 private:
     Ui::MainWindow *ui;
     QLabel *statusByteCountLabel;
+    QCheckBox *singleLineCheckBox;
     QSystemTrayIcon *trayIcon;
     QMenu *trayIconMenu;
     QAction *restoreAction, *selectionTranslateAction,*commonUsedPairsStartSep,*commonUsedPairsEndSep, *quitAction;
@@ -55,21 +58,24 @@ private:
     CommonTranslateCore *dialogCommonTranslateCore,*mainCommonTranslateCore;
 
     bool notInformAnymore,minimizeAfterClose;
-    bool syncMode;
 
+    bool syncMode;
     QTimer *syncTimer;
+
+    QTimer *selectionTimer;
+    QKeyEvent *copyKeyPressEvent,*copyKeyReleaseEvent;
+    QPoint lastCursorPos;
+    bool isTranslated;
 
     void createTrayActions();
     void createTrayIcon();
-    void createTranslateHotkey();
+    void createShortCutTranslateFunction();
     void createLanguageOptions();
     void createMenuActions();
+    //void createSelectionTranslateFunction();
 
-    void readOutDialogSettings();
-    void writeOutDialogSettings();
-    void readInDialogSettings();
-    void writeInDialogSettings();
+    void readSettings();
+    void writeSettings();
 };
-#endif
 
 #endif // MAINWINDOW_H

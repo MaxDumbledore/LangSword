@@ -15,7 +15,7 @@ SettingsDialog::SettingsDialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tabWidget->tabBar()->setStyle(new CustomTabStyle());
-    readInDialogSettings();
+    getSettingsFromMainWindow();
 
     connect(this,&QDialog::accepted,this,&SettingsDialog::updateSettings);
     connect(ui->addButton,&QPushButton::clicked,[&](){
@@ -37,18 +37,20 @@ void SettingsDialog::updateSettings()
     auto mainWindow=qobject_cast<MainWindow *>(parent());
     if(mainWindow->getSyncMode()!=ui->syncModeCheckBox->isChecked())
         mainWindow->changeSyncMode();
+    mainWindow->setNotInformAnymore(!ui->informCheckBox->isChecked());
     QStringList list;
     for(auto i=0;i<pModel->rowCount();i++)
-        list.append(pModel-> item(i,0)->text()+" -> "+pModel->item(i,1)->text());
+        list.append(pModel->item(i,0)->text()+" -> "+pModel->item(i,1)->text());
     mainWindow->replaceCommonUsedPairs(list);
 }
 
-void SettingsDialog::readInDialogSettings()
+void SettingsDialog::getSettingsFromMainWindow()
 {
-    QSettings settings(QCoreApplication::organizationName(),QCoreApplication::applicationName());
-    ui->syncModeCheckBox->setChecked(settings.value("syncMode",false).toBool());
+    auto mainWindow=qobject_cast<MainWindow *>(parent());
+    ui->syncModeCheckBox->setChecked(mainWindow->getSyncMode());
+    ui->informCheckBox->setChecked(!mainWindow->getNotInformAnymore());
 
-    auto list=settings.value("commonUsedPairs",QStringList(LanguageConstants::defaultSourceLanguage+" -> "+LanguageConstants::defaultTargetLanguage)).toStringList();
+    auto list=mainWindow->getCommonUsedPairs();
     pModel= new QStandardItemModel(list.size(),2,this);
     ui->pairsView->setModel(pModel);
     ui->pairsView->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);

@@ -19,7 +19,7 @@ public:
 private:
     Ui::SettingsDialog *ui;
     QStandardItemModel *pModel;
-    void readInDialogSettings();
+    void getSettingsFromMainWindow();
 
 private slots:
     void updateSettings();

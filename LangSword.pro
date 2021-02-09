@@ -21,6 +21,7 @@ SOURCES += \
     commontranslatecore.cpp \
     customtabstyle.cpp \
     documenttranslatecore.cpp \
+    enhancedtextedit.cpp \
     languageconstants.cpp \
     main.cpp \
     mainwindow.cpp \
@@ -34,6 +35,7 @@ HEADERS += \
     commontranslatecore.h \
     customtabstyle.h \
     documenttranslatecore.h \
+    enhancedtextedit.h \
     languageconstants.h \
     mainwindow.h \
     responsedialog.h \

@@ -13,6 +13,12 @@ public:
 
     void translate(QString content) override;
 
+public slots:
+    void changeSingleLineMode();
+
+protected:
+    bool singleLineMode;
+
 protected slots:
     void callback(QNetworkReply *reply) override;
 

@@ -33,24 +33,37 @@
       <enum>QTabWidget::Rounded</enum>
      </property>
      <property name="currentIndex">
-      <number>1</number>
+      <number>0</number>
      </property>
      <widget class="QWidget" name="tab_1">
       <attribute name="title">
        <string>Main Interface</string>
       </attribute>
-      <widget class="QCheckBox" name="syncModeCheckBox">
+      <widget class="QWidget" name="">
        <property name="geometry">
         <rect>
          <x>50</x>
          <y>40</y>
-         <width>181</width>
-         <height>21</height>
+         <width>245</width>
+         <height>54</height>
         </rect>
        </property>
-       <property name="text">
-        <string>Synchronization Mode</string>
-       </property>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="syncModeCheckBox">
+          <property name="text">
+           <string>Synchronization Mode</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="informCheckBox">
+          <property name="text">
+           <string>Show Inform Dialog When Close</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
      <widget class="QWidget" name="tab_2">

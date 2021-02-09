@@ -9,12 +9,22 @@
 const QString CommonTranslateCore::prefixUrl="http://api.fanyi.baidu.com/api/trans/vip/translate";
 
 CommonTranslateCore::CommonTranslateCore(QString _from,QString _to):
-    TranslateCore(_from,_to)
+    TranslateCore(_from,_to),singleLineMode(false)
 {
 }
 
 void CommonTranslateCore::translate(QString content)
 {
+    if(content.isEmpty())
+    {
+        emit resultReceived("");
+        return;
+    }
+    if(singleLineMode)
+    {
+        content.replace('\n',' ');
+        content.remove('\r');
+    }
     QUrl myUrl(prefixUrl);
     QUrlQuery query;
     QByteArray temp;
@@ -22,14 +32,19 @@ void CommonTranslateCore::translate(QString content)
     temp.append(appId+content+salt+secretKey);
     sign=QCryptographicHash::hash(temp,QCryptographicHash::Md5).toHex();
     query.addQueryItem("appid",appId);
-    query.addQueryItem("q",content);
+    //query.addQueryItem("q",content);
     query.addQueryItem("from",from);
     query.addQueryItem("to",to);
     query.addQueryItem("salt",salt);
     query.addQueryItem("sign",sign);
-    myUrl.setQuery(query);
+    myUrl.setQuery(query.query()+"&q="+QUrl::toPercentEncoding(content));
     qDebug()<<myUrl;
     naManager->get(QNetworkRequest(myUrl));
+}
+
+void CommonTranslateCore::changeSingleLineMode()
+{
+    singleLineMode=!singleLineMode;
 }
 
 void CommonTranslateCore::callback(QNetworkReply *reply)
