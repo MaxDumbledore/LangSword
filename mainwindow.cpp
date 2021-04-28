@@ -334,3 +334,4 @@ void MainWindow::on_clearButton_clicked()
     ui->sourceEdit->clear();
     ui->targetEdit->clear();
 }
+//
